@@ -1,7 +1,7 @@
 // ==========================
 // FILE: src/tasks/task_crud_update.c
 // ==========================
-
+#include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include "db.h"
