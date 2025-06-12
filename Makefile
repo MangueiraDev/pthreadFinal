@@ -1,20 +1,38 @@
+# ==========================
+# FILE: Makefile
+# ==========================
+
 CC = gcc
-CFLAGS = -Wall -pthread -Iinclude
-SRC = src/main.c src/task.c src/scheduler.c src/thread_funcs.c
-OUT_DIR = build
+CFLAGS = -Wall -pthread -lsqlite3 -Iinclude
+SRC = src
+BUILD = build
 
-# Cria pasta de saída se necessário
-$(OUT_DIR):
-	mkdir -p $(OUT_DIR)
+SRCS = \
+	$(SRC)/main.c \
+	$(SRC)/task_manager.c \
+	$(SRC)/scheduler.c \
+	$(SRC)/thread_funcs.c \
+	$(SRC)/db/db.c \
+	$(SRC)/tasks/task_crud_insert.c \
+	$(SRC)/tasks/task_crud_list.c \
+	$(SRC)/tasks/task_crud_update.c \
+	$(SRC)/tasks/task_crud_delete.c
 
-# Round Robin (default)
-rr: $(OUT_DIR)
-	$(CC) $(CFLAGS) -o $(OUT_DIR)/scheduler_rr $(SRC)
+all:
+	make clean
+	make fifo && ./build/scheduler_fifo
+	make rr && ./build/scheduler_rr
 
-# FIFO (define FIFO_MODE para o compilador)
-fifo: $(OUT_DIR)
-	$(CC) $(CFLAGS) -DFIFO_MODE -o $(OUT_DIR)/scheduler_fifo $(SRC)
+fifo: CFLAGS += -DFIFO_MODE
+fifo:
+	@mkdir -p $(BUILD)
+	$(CC) $(CFLAGS) $(SRCS) -o $(BUILD)/scheduler_fifo
+	@echo "Executável FIFO gerado: ./$(BUILD)/scheduler_fifo"
 
-# Limpar
+rr:
+	@mkdir -p $(BUILD)
+	$(CC) $(CFLAGS) $(SRCS) -o $(BUILD)/scheduler_rr
+	@echo "Executável RR gerado: ./$(BUILD)/scheduler_rr"
+
 clean:
-	rm -rf $(OUT_DIR)
+	rm -rf $(BUILD)

@@ -5,29 +5,28 @@
 #define TASK_H
 
 #include <pthread.h>
+#include <time.h>
 #include <stdbool.h>
-#include <stdlib.h>
 
-#define NUM_THREADS 5
-#define TIME_QUANTUM 2
+typedef enum {
+    PERIODIC,
+    APERIODIC
+} TaskType;
 
 typedef struct {
-    pthread_t thread;
     int id;
+    TaskType type;
     int total_work_units;
     int progress;
+    pthread_t thread;
+    void* (*task_func)(void*);
+    struct timespec deadline;
+    struct timespec start_time;
+    struct timespec finish_time;
+    bool missed_deadline;
+    const char* name;  // Nome descritivo da tarefa
 } Task;
 
-extern Task task_queue[NUM_THREADS];
-extern int tasks_completed_count;
-extern int current_turn_id;
-extern bool task_done[NUM_THREADS];
-
-extern pthread_mutex_t mutex;
-extern pthread_cond_t cond_scheduler_wait;
-extern pthread_cond_t cond_thread_work[NUM_THREADS];
-
-void do_work_rr(Task* task, int units_to_do);
-void do_work_fifo(int thread_id);
+#define NUM_THREADS 8  // 4 CRUD x (1 periódica + 1 aperiódica)
 
 #endif

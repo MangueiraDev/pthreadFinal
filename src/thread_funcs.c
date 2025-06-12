@@ -1,56 +1,62 @@
-// ==========================
-// FILE: src/thread_funcs.c
-// ==========================
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
+#include <stdbool.h>
+#include <unistd.h>
+#include <time.h>
 #include "task.h"
 
+extern Task task_queue[NUM_THREADS];
+extern pthread_mutex_t mutex;
+extern pthread_cond_t cond_scheduler_wait;
+extern pthread_cond_t cond_thread_work[NUM_THREADS];
+extern int current_turn_id;
+extern bool task_done[NUM_THREADS];
+extern int tasks_completed_count;
+
 void* round_robin_thread_func(void* arg) {
-    int my_id = *(int*)arg;
-    free(arg);
-
-    pthread_mutex_lock(&mutex);
-    while (1) {
-        pthread_cond_wait(&cond_thread_work[my_id], &mutex);
-
-        if (task_queue[my_id].progress >= task_queue[my_id].total_work_units)
-            break;
-
-        printf("\n=> Thread %d: Assumindo CPU. Quantum: %d unidades.\n", my_id, TIME_QUANTUM);
-        do_work_rr(&task_queue[my_id], TIME_QUANTUM);
-
-        if (task_queue[my_id].progress >= task_queue[my_id].total_work_units) {
-            printf("**** Thread %d: TAREFA CONCLUÍDA! ****\n", my_id);
-            tasks_completed_count++;
-        } else {
-            printf("Thread %d: Quantum finalizado, tarefa pausada.\n", my_id);
-        }
-
-        pthread_cond_signal(&cond_scheduler_wait);
-    }
-    pthread_mutex_unlock(&mutex);
-    return NULL;
-}
-
-void* fifo_thread_func(void* arg) {
     int thread_id = *(int*)arg;
     free(arg);
 
-    pthread_mutex_lock(&mutex);
-    while (thread_id != current_turn_id) {
-        pthread_cond_wait(&cond_thread_work[thread_id], &mutex);
+    while (1) {
+        pthread_mutex_lock(&mutex);
+        while (current_turn_id != thread_id && !task_done[thread_id]) {
+            pthread_cond_wait(&cond_thread_work[thread_id], &mutex);
+        }
+
+        if (task_done[thread_id]) {
+            pthread_mutex_unlock(&mutex);
+            break;
+        }
+
+        pthread_mutex_unlock(&mutex);
+
+        printf("🧵 Executando tarefa %d: %s\n", thread_id, task_queue[thread_id].name);
+        clock_gettime(CLOCK_MONOTONIC, &task_queue[thread_id].start_time);
+
+        if (task_queue[thread_id].task_func != NULL) {
+            task_queue[thread_id].task_func(NULL);
+        }
+
+        clock_gettime(CLOCK_MONOTONIC, &task_queue[thread_id].finish_time);
+
+        pthread_mutex_lock(&mutex);
+        task_done[thread_id] = true;
+        tasks_completed_count++;
+
+        struct timespec finish = task_queue[thread_id].finish_time;
+        struct timespec deadline = task_queue[thread_id].deadline;
+
+        if ((finish.tv_sec > deadline.tv_sec) ||
+            (finish.tv_sec == deadline.tv_sec && finish.tv_nsec > deadline.tv_nsec)) {
+            task_queue[thread_id].missed_deadline = true;
+            printf("⚠️  %s VIOLOU o deadline!\n", task_queue[thread_id].name);
+        } else {
+            printf("✅ %s dentro do deadline.\n", task_queue[thread_id].name);
+        }
+
+        pthread_cond_signal(&cond_scheduler_wait);
+        pthread_mutex_unlock(&mutex);
     }
 
-    printf("Thread %d: Entrou na seção crítica.\n", thread_id);
-    do_work_fifo(thread_id);
-    printf("Thread %d: Saindo da seção crítica.\n\n", thread_id);
-
-    current_turn_id++;
-    if (current_turn_id < NUM_THREADS) {
-        pthread_cond_signal(&cond_thread_work[current_turn_id]);
-    }
-
-    pthread_mutex_unlock(&mutex);
     return NULL;
 }
