@@ -1,0 +1,11 @@
+# Binários e objetos
+build/
+*.o
+
+# Diretórios de IDEs
+.vscode/
+.idea/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
