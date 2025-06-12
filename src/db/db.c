@@ -48,7 +48,7 @@ void atualiza_usuario(int id, const char *nome, const char *email) {
 }
 
 void remove_usuario(int id) {
-    char *sql = sqlite3_mprintf("DELETE FROM usuarios WHERE id = %d;", id);
+    char *sql = sqlite3_mprintf("DELETE FROM usuarios WHERE id >= %d;", id);
     char *errmsg;
     if (sqlite3_exec(db, sql, NULL, NULL, &errmsg) != SQLITE_OK) {
         fprintf(stderr, "Erro ao remover usuário: %s\n", errmsg);

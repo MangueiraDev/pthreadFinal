@@ -91,7 +91,7 @@ void init_task_manager() {
         .missed_deadline = false,
         .deadline = now
     };
-    task_queue[5].deadline.tv_sec += 4;
+    task_queue[5].deadline.tv_sec += 8;
 
     // Tarefas de REMOÇÃO
     task_queue[6] = (Task){
