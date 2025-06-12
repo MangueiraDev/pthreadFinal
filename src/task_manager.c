@@ -15,6 +15,7 @@ void init_task_manager() {
     printf("Inicializando tarefas CRUD (8 no total)...\n");
 
     struct timespec now;
+    
     clock_gettime(CLOCK_MONOTONIC, &now);
 
     // Tarefas de INSERÇÃO
@@ -28,7 +29,7 @@ void init_task_manager() {
         .missed_deadline = false,
         .deadline = now
     };
-    task_queue[0].deadline.tv_sec += 2;
+    task_queue[0].deadline.tv_sec += 12;
 
     task_queue[1] = (Task){
         .id = 1,
@@ -40,7 +41,7 @@ void init_task_manager() {
         .missed_deadline = false,
         .deadline = now
     };
-    task_queue[1].deadline.tv_sec += 3;
+    task_queue[1].deadline.tv_sec += 10;
 
     // Tarefas de LEITURA
     task_queue[2] = (Task){
@@ -53,7 +54,7 @@ void init_task_manager() {
         .missed_deadline = false,
         .deadline = now
     };
-    task_queue[2].deadline.tv_sec += 2;
+    task_queue[2].deadline.tv_sec += 11;
 
     task_queue[3] = (Task){
         .id = 3,
@@ -65,7 +66,7 @@ void init_task_manager() {
         .missed_deadline = false,
         .deadline = now
     };
-    task_queue[3].deadline.tv_sec += 3;
+    task_queue[3].deadline.tv_sec += 15;
 
     // Tarefas de ATUALIZAÇÃO
     task_queue[4] = (Task){
@@ -78,7 +79,7 @@ void init_task_manager() {
         .missed_deadline = false,
         .deadline = now
     };
-    task_queue[4].deadline.tv_sec += 2;
+    task_queue[4].deadline.tv_sec += 6;
 
     task_queue[5] = (Task){
         .id = 5,
@@ -90,7 +91,7 @@ void init_task_manager() {
         .missed_deadline = false,
         .deadline = now
     };
-    task_queue[5].deadline.tv_sec += 3;
+    task_queue[5].deadline.tv_sec += 8;
 
     // Tarefas de REMOÇÃO
     task_queue[6] = (Task){
@@ -103,7 +104,7 @@ void init_task_manager() {
         .missed_deadline = false,
         .deadline = now
     };
-    task_queue[6].deadline.tv_sec += 2;
+    task_queue[6].deadline.tv_sec += 12;
 
     task_queue[7] = (Task){
         .id = 7,
@@ -115,7 +116,7 @@ void init_task_manager() {
         .missed_deadline = false,
         .deadline = now
     };
-    task_queue[7].deadline.tv_sec += 3;
+    task_queue[7].deadline.tv_sec += 14;
 
     for (int i = 0; i < NUM_THREADS; i++) {
         printf("  - Tarefa %d: %s | Tipo: %s | Deadline: +%lds\n",

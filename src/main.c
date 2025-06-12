@@ -38,15 +38,18 @@ int main() {
 #ifdef FIFO_MODE
     run_fifo_scheduler();
 #else
+    
     for (int i = 0; i < NUM_THREADS; i++) {
         int* thread_id = malloc(sizeof(int));
         *thread_id = i;
         pthread_create(&task_queue[i].thread, NULL, round_robin_thread_func, thread_id);
     }
+
     run_round_robin_scheduler();
     for (int i = 0; i < NUM_THREADS; i++) {
         pthread_join(task_queue[i].thread, NULL);
     }
+
 #endif
 
     finaliza_banco();               // Fecha SQLite
