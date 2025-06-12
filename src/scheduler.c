@@ -1,46 +1,70 @@
-// ==========================
-// FILE: src/scheduler.c
-// ==========================
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <unistd.h>
+#include <pthread.h>
 #include "task.h"
 #include "thread_funcs.h"
+
+extern Task task_queue[NUM_THREADS];
+extern pthread_mutex_t mutex;
+extern pthread_cond_t cond_thread_work[NUM_THREADS];
+extern pthread_cond_t cond_scheduler_wait;
+extern bool task_done[NUM_THREADS];
+extern int current_turn_id;
+extern int tasks_completed_count;
 
 #ifdef FIFO_MODE
 
 void run_fifo_scheduler() {
+    printf("\n[FIFO] Iniciando escalonamento FIFO com tarefas reais...\n");
+
     for (int i = 0; i < NUM_THREADS; i++) {
         pthread_cond_init(&cond_thread_work[i], NULL);
         task_done[i] = false;
     }
 
     for (int i = 0; i < NUM_THREADS; i++) {
-        int* thread_id = malloc(sizeof(int));
-        *thread_id = i;
-        pthread_create(&task_queue[i].thread, NULL, fifo_thread_func, thread_id);
+        pthread_create(&task_queue[i].thread, NULL, task_queue[i].task_func, NULL);
+        pthread_join(task_queue[i].thread, NULL);
+        clock_gettime(CLOCK_MONOTONIC, &task_queue[i].finish_time);
+
+        if ((task_queue[i].finish_time.tv_sec > task_queue[i].deadline.tv_sec) ||
+            (task_queue[i].finish_time.tv_sec == task_queue[i].deadline.tv_sec &&
+             task_queue[i].finish_time.tv_nsec > task_queue[i].deadline.tv_nsec)) {
+            task_queue[i].missed_deadline = true;
+            printf("⚠️  Tarefa %d VIOLOU o deadline!\n", i);
+        } else {
+            printf("✅ Tarefa %d dentro do deadline.\n", i);
+        }
     }
 
-    sleep(1);
-    pthread_cond_signal(&cond_thread_work[0]);
+    printf("\n[FIFO] Todas as tarefas foram concluídas! Encerrando.\n");
 
     for (int i = 0; i < NUM_THREADS; i++) {
-        pthread_join(task_queue[i].thread, NULL);
+        double start = task_queue[i].start_time.tv_sec + task_queue[i].start_time.tv_nsec / 1e9;
+        double finish = task_queue[i].finish_time.tv_sec + task_queue[i].finish_time.tv_nsec / 1e9;
+        double exec = finish - start;
+        printf("⏱️  Tarefa %d | Tipo: %s | Execução: %.6fs | Deadline: %ld.%09ld | %s\n",
+               i,
+               task_queue[i].type == PERIODIC ? "Periódica" : "Não-periódica",
+               exec,
+               task_queue[i].deadline.tv_sec,
+               task_queue[i].deadline.tv_nsec,
+               task_queue[i].missed_deadline ? "❌ Deadline Violado" : "✅ OK");
     }
-
-    printf("\n--- FIFO: Todas as tarefas foram concluídas! Encerrando. ---\n");
 }
 
 #else
 
 void run_round_robin_scheduler() {
+    printf("\n[RR] Iniciando escalonamento Round Robin com tarefas reais...\n");
+
     sleep(1);
     pthread_mutex_lock(&mutex);
-
     while (tasks_completed_count < NUM_THREADS) {
-        Task* current_task = &task_queue[current_turn_id];
-
-        if (current_task->progress < current_task->total_work_units) {
+        if (!task_done[current_turn_id]) {
+            printf("[RR] Turno da tarefa %d...\n", current_turn_id);
             pthread_cond_signal(&cond_thread_work[current_turn_id]);
             pthread_cond_wait(&cond_scheduler_wait, &mutex);
         }
@@ -51,9 +75,22 @@ void run_round_robin_scheduler() {
     for (int i = 0; i < NUM_THREADS; i++) {
         pthread_cond_signal(&cond_thread_work[i]);
     }
-
     pthread_mutex_unlock(&mutex);
-    printf("\n--- RR: Todas as tarefas foram concluídas! Encerrando. ---\n");
+
+    printf("\n[RR] Todas as tarefas foram concluídas! Encerrando.\n");
+
+    for (int i = 0; i < NUM_THREADS; i++) {
+        double start = task_queue[i].start_time.tv_sec + task_queue[i].start_time.tv_nsec / 1e9;
+        double finish = task_queue[i].finish_time.tv_sec + task_queue[i].finish_time.tv_nsec / 1e9;
+        double exec = finish - start;
+        printf("⏱️  Tarefa %d | Tipo: %s | Execução: %.6fs | Deadline: %ld.%09ld | %s\n",
+               i,
+               task_queue[i].type == PERIODIC ? "Periódica" : "Não-periódica",
+               exec,
+               task_queue[i].deadline.tv_sec,
+               task_queue[i].deadline.tv_nsec,
+               task_queue[i].missed_deadline ? "❌ Deadline Violado" : "✅ OK");
+    }
 }
 
 #endif

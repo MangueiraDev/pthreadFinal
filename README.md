@@ -120,5 +120,5 @@ Ignora arquivos desnecessários no Git
 ---
 ## Executar
 make clean
-make rr && ./build/scheduler_rr
 make fifo && ./build/scheduler_fifo
+make rr && ./build/scheduler_rr
