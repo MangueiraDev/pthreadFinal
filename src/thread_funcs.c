@@ -30,6 +30,7 @@ void* round_robin_thread_func(void* arg) {
 
         pthread_mutex_unlock(&mutex);
 
+        printf("🧵 Executando tarefa %d: %s\n", thread_id, task_queue[thread_id].name);
         clock_gettime(CLOCK_MONOTONIC, &task_queue[thread_id].start_time);
 
         if (task_queue[thread_id].task_func != NULL) {
@@ -48,9 +49,9 @@ void* round_robin_thread_func(void* arg) {
         if ((finish.tv_sec > deadline.tv_sec) ||
             (finish.tv_sec == deadline.tv_sec && finish.tv_nsec > deadline.tv_nsec)) {
             task_queue[thread_id].missed_deadline = true;
-            printf("⚠️  Tarefa %d VIOLOU o deadline!\n", thread_id);
+            printf("⚠️  %s VIOLOU o deadline!\n", task_queue[thread_id].name);
         } else {
-            printf("✅ Tarefa %d dentro do deadline.\n", thread_id);
+            printf("✅ %s dentro do deadline.\n", task_queue[thread_id].name);
         }
 
         pthread_cond_signal(&cond_scheduler_wait);

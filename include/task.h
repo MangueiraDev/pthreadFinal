@@ -1,3 +1,6 @@
+// ==========================
+// FILE: include/task.h
+// ==========================
 #ifndef TASK_H
 #define TASK_H
 
@@ -21,8 +24,9 @@ typedef struct {
     struct timespec start_time;
     struct timespec finish_time;
     bool missed_deadline;
+    const char* name;  // Nome descritivo da tarefa
 } Task;
 
-#define NUM_THREADS 2
+#define NUM_THREADS 8  // 4 CRUD x (1 periódica + 1 aperiódica)
 
 #endif

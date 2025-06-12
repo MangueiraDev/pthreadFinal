@@ -4,34 +4,35 @@
 
 CC = gcc
 CFLAGS = -Wall -pthread -lsqlite3 -Iinclude
-SRC_DIR = src
-BUILD_DIR = build
+SRC = src
+BUILD = build
 
-# Fontes
-SRCS_COMMON = \
-	$(SRC_DIR)/main.c \
-	$(SRC_DIR)/task_manager.c \
-	$(SRC_DIR)/scheduler.c \
-	$(SRC_DIR)/thread_funcs.c \
-	$(SRC_DIR)/db/db.c \
-	$(SRC_DIR)/tasks/task_crud_insert.c \
-	$(SRC_DIR)/tasks/task_crud_update.c \
-	$(SRC_DIR)/tasks/task_crud_delete.c \
-	$(SRC_DIR)/tasks/task_crud_list.c
+SRCS = \
+	$(SRC)/main.c \
+	$(SRC)/task_manager.c \
+	$(SRC)/scheduler.c \
+	$(SRC)/thread_funcs.c \
+	$(SRC)/db/db.c \
+	$(SRC)/tasks/task_crud_insert.c \
+	$(SRC)/tasks/task_crud_list.c \
+	$(SRC)/tasks/task_crud_update.c \
+	$(SRC)/tasks/task_crud_delete.c
 
-# FIFO build
+all:
+	make clean
+	make fifo && ./build/scheduler_fifo
+	make rr && ./build/scheduler_rr
+
 fifo: CFLAGS += -DFIFO_MODE
-fifo: $(SRCS_COMMON)
-	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $^ -o $(BUILD_DIR)/scheduler_fifo
-	@echo "Executável FIFO gerado: ./$(BUILD_DIR)/scheduler_fifo"
+fifo:
+	@mkdir -p $(BUILD)
+	$(CC) $(CFLAGS) $(SRCS) -o $(BUILD)/scheduler_fifo
+	@echo "Executável FIFO gerado: ./$(BUILD)/scheduler_fifo"
 
-# Round Robin build
-rr: $(SRCS_COMMON)
-	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $^ -o $(BUILD_DIR)/scheduler_rr
-	@echo "Executável RR gerado: ./$(BUILD_DIR)/scheduler_rr"
+rr:
+	@mkdir -p $(BUILD)
+	$(CC) $(CFLAGS) $(SRCS) -o $(BUILD)/scheduler_rr
+	@echo "Executável RR gerado: ./$(BUILD)/scheduler_rr"
 
-# Limpeza
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD)
