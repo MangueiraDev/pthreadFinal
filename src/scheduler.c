@@ -94,7 +94,7 @@ void run_round_robin_scheduler()
         double start = task_queue[i].start_time.tv_sec + task_queue[i].start_time.tv_nsec / 1e9;
         double finish = task_queue[i].finish_time.tv_sec + task_queue[i].finish_time.tv_nsec / 1e9;
         double exec = finish - start;
-        printf("⏱️  %s | Execução: %.6fs | ld.%09ld | %s\n",
+        printf("⏱️  %s | Execução: %.6fs | %ld.%09ld | %s\n",
                task_queue[i].name,
                exec,
                task_queue[i].deadline.tv_sec,
