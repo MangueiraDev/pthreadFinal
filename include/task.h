@@ -21,6 +21,7 @@ typedef struct {
     pthread_t thread;
     void* (*task_func)(void*);
     struct timespec deadline;
+    struct timespec time_zero;
     struct timespec start_time;
     struct timespec finish_time;
     bool missed_deadline;

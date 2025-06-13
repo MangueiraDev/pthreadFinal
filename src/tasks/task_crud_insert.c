@@ -18,7 +18,8 @@ void* task_crud_insert(void* arg) {
     snprintf(email, sizeof(email), "%s%d@example.com", nomes[idx], rand() % 1000);
 
     insere_usuario(nomes[idx], email);
-    sleep(1); // simular tempo de execução
-    printf("[INSERT] Finalizada inserção\n");
+// Simular latência aleatória entre 2 e 12 segundos
+    int latency = (rand() % 6) + 2; // 2 a 12 segundos
+    sleep(latency);    printf("[INSERT] Finalizada inserção\n");
     return NULL;
 }

@@ -2,6 +2,7 @@
 #include <time.h>
 #include "task_manager.h"
 #include "task.h"
+#include <stdlib.h>
 
 // Funções CRUD
 #include "task_crud_insert.h"
@@ -26,7 +27,7 @@ void init_task_manager() {
         .task_func = task_crud_insert,
         .total_work_units = 2,
         .progress = 0,
-        .missed_deadline = false,
+        .time_zero = now,
         .deadline = now
     };
     task_queue[0].deadline.tv_sec += 12;
@@ -39,9 +40,10 @@ void init_task_manager() {
         .total_work_units = 2,
         .progress = 0,
         .missed_deadline = false,
+        .time_zero = now,
         .deadline = now
     };
-    task_queue[1].deadline.tv_sec += 10;
+    task_queue[1].deadline.tv_sec += 4;
 
     // Tarefas de LEITURA
     task_queue[2] = (Task){
@@ -52,6 +54,7 @@ void init_task_manager() {
         .total_work_units = 1,
         .progress = 0,
         .missed_deadline = false,
+        .time_zero = now,
         .deadline = now
     };
     task_queue[2].deadline.tv_sec += 11;
@@ -63,10 +66,10 @@ void init_task_manager() {
         .task_func = task_crud_list,
         .total_work_units = 1,
         .progress = 0,
-        .missed_deadline = false,
+        .missed_deadline = false,.time_zero = now,
         .deadline = now
     };
-    task_queue[3].deadline.tv_sec += 15;
+    task_queue[3].deadline.tv_sec += 7;
 
     // Tarefas de ATUALIZAÇÃO
     task_queue[4] = (Task){
@@ -77,9 +80,10 @@ void init_task_manager() {
         .total_work_units = 2,
         .progress = 0,
         .missed_deadline = false,
+        .time_zero = now,
         .deadline = now
     };
-    task_queue[4].deadline.tv_sec += 6;
+    task_queue[4].deadline.tv_sec += 3;
 
     task_queue[5] = (Task){
         .id = 5,
@@ -89,6 +93,7 @@ void init_task_manager() {
         .total_work_units = 2,
         .progress = 0,
         .missed_deadline = false,
+        .time_zero = now,
         .deadline = now
     };
     task_queue[5].deadline.tv_sec += 8;
@@ -102,9 +107,10 @@ void init_task_manager() {
         .total_work_units = 1,
         .progress = 0,
         .missed_deadline = false,
+        .time_zero = now,
         .deadline = now
     };
-    task_queue[6].deadline.tv_sec += 12;
+    task_queue[6].deadline.tv_sec += 6;
 
     task_queue[7] = (Task){
         .id = 7,
@@ -114,15 +120,16 @@ void init_task_manager() {
         .total_work_units = 1,
         .progress = 0,
         .missed_deadline = false,
+        .time_zero = now,
         .deadline = now
     };
-    task_queue[7].deadline.tv_sec += 14;
+    task_queue[7].deadline.tv_sec += 10;
 
     for (int i = 0; i < NUM_THREADS; i++) {
-        printf("  - Tarefa %d: %s | Tipo: %s | Deadline: +%lds\n",
+        printf("  - Tarefa %d: %s | Deadline: +%lds\n",
                i,
                task_queue[i].name,
-               task_queue[i].type == PERIODIC ? "Periódica" : "Não-periódica",
+             //  task_queue[i].type == PERIODIC ? "Periódica" : "Não-periódica",
                task_queue[i].deadline.tv_sec - now.tv_sec);
     }
 }
