@@ -46,6 +46,7 @@ int main() {
     }
 
     run_round_robin_scheduler();
+    
     for (int i = 0; i < NUM_THREADS; i++) {
         pthread_join(task_queue[i].thread, NULL);
     }

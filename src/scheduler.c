@@ -34,12 +34,11 @@ void run_fifo_scheduler()
         pthread_join(task_queue[i].thread, NULL);
         clock_gettime(CLOCK_MONOTONIC, &task_queue[i].finish_time);
 
-        if ((task_queue[i].finish_time.tv_sec > task_queue[i].deadline.tv_sec) ||
-            (task_queue[i].finish_time.tv_sec == task_queue[i].deadline.tv_sec &&
-             task_queue[i].finish_time.tv_nsec > task_queue[i].deadline.tv_nsec))
-        {
+        double time_exec = task_queue[i].finish_time.tv_sec - task_queue[i].start_time.tv_sec;
+
+        if ((time_exec) > (task_queue[i].deadline.tv_sec - task_queue[i].time_zero.tv_sec)) {
             task_queue[i].missed_deadline = true;
-            printf("⚠️  %s VIOLOU o deadline!\n", task_queue[i].name);
+            printf("⚠️  %s VIOLOU o deadline! | Tempo de execução: %0.2f\n", task_queue[i].name, time_exec);
         }
         else
         {
@@ -52,19 +51,22 @@ void run_fifo_scheduler()
     {
         double start = task_queue[i].start_time.tv_sec + task_queue[i].start_time.tv_nsec / 1e9;
         double finish = task_queue[i].finish_time.tv_sec + task_queue[i].finish_time.tv_nsec / 1e9;
+        double time_zero = task_queue[i].time_zero.tv_sec + task_queue[i].time_zero.tv_nsec / 1e9;
+        double deadline = (task_queue[i].deadline.tv_sec + task_queue[i].deadline.tv_nsec / 1e9) - time_zero;
+
         double exec = finish - start;
-        printf("⏱️  %s | Execução: %.6fs | Deadline: %ld.%09ld | %s\n",
+
+        printf("⏱️  %s | Execução: %0.2f| Deadline: %0.1f | %s\n",
                task_queue[i].name,
                exec,
-               task_queue[i].deadline.tv_sec,
-               task_queue[i].deadline.tv_nsec,
+               deadline,
                task_queue[i].missed_deadline ? "❌ Violado" : "✅ OK");
-    }
+}
 }
 
 #else
 
-void run_round_robin_scheduler()
+void* run_round_robin_scheduler()
 {
     printf("\n[RR] Iniciando escalonamento Round Robin com tarefas reais...\n");
 
@@ -93,14 +95,20 @@ void run_round_robin_scheduler()
     {
         double start = task_queue[i].start_time.tv_sec + task_queue[i].start_time.tv_nsec / 1e9;
         double finish = task_queue[i].finish_time.tv_sec + task_queue[i].finish_time.tv_nsec / 1e9;
+        
+        double time_zero = task_queue[i].time_zero.tv_sec + task_queue[i].time_zero.tv_nsec / 1e9;
+        double deadline = (task_queue[i].deadline.tv_sec + task_queue[i].deadline.tv_nsec / 1e9) - time_zero;
+
         double exec = finish - start;
-        printf("⏱️  %s | Execução: %.6fs | %ld.%09ld | %s\n",
+
+        printf("⏱️  %s | Execução: %0.2f| Deadline: %0.1f | %s\n",
                task_queue[i].name,
                exec,
-               task_queue[i].deadline.tv_sec,
-               task_queue[i].deadline.tv_nsec,
+               deadline,
                task_queue[i].missed_deadline ? "❌ Violado" : "✅ OK");
     }
+
+    return NULL;
 }
 
 #endif

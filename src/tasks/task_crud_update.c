@@ -16,7 +16,8 @@ void* task_crud_update(void* arg) {
     snprintf(email, sizeof(email), "%s%d@example.com", nomes[idx], rand() % 1000);
 
     atualiza_usuario(1, nomes[idx], email);
-    sleep(1); // simula tempo de processamento
-    printf("[UPDATE] Finalizada atualização\n");
+// Simular latência aleatória entre 2 e 12 segundos
+    int latency = (rand() % 6) + 2; // 2 a 12 segundos
+    sleep(latency);    printf("[UPDATE] Finalizada atualização\n");
     return NULL;
 }
