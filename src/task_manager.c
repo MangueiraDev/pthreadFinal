@@ -2,6 +2,7 @@
 #include <time.h>
 #include "task_manager.h"
 #include "task.h"
+
 #include <stdlib.h>
 
 // Funções CRUD
@@ -12,11 +13,12 @@
 
 extern Task task_queue[NUM_THREADS];
 
-void init_task_manager() {
+void init_task_manager()
+{
     printf("Inicializando tarefas CRUD (8 no total)...\n");
 
     struct timespec now;
-    
+
     clock_gettime(CLOCK_MONOTONIC, &now);
 
     // Tarefas de INSERÇÃO
@@ -25,11 +27,10 @@ void init_task_manager() {
         .type = APERIODIC,
         .name = "Inserção A (CREATE)",
         .task_func = task_crud_insert,
-        .total_work_units = 2,
+        .total_work_units = 2 + (rand() % TIME_QUANTUM),
         .progress = 0,
         .time_zero = now,
-        .deadline = now
-    };
+        .deadline = now};
     task_queue[0].deadline.tv_sec += 12;
 
     task_queue[1] = (Task){
@@ -37,12 +38,11 @@ void init_task_manager() {
         .type = PERIODIC,
         .name = "Inserção B (CREATE)",
         .task_func = task_crud_insert,
-        .total_work_units = 2,
+        .total_work_units = 2 + (rand() % TIME_QUANTUM),
         .progress = 0,
         .missed_deadline = false,
         .time_zero = now,
-        .deadline = now
-    };
+        .deadline = now};
     task_queue[1].deadline.tv_sec += 4;
 
     // Tarefas de LEITURA
@@ -51,12 +51,11 @@ void init_task_manager() {
         .type = APERIODIC,
         .name = "Leitura A (READ)",
         .task_func = task_crud_list,
-        .total_work_units = 1,
+        .total_work_units = 2 + (rand() % TIME_QUANTUM),
         .progress = 0,
         .missed_deadline = false,
         .time_zero = now,
-        .deadline = now
-    };
+        .deadline = now};
     task_queue[2].deadline.tv_sec += 11;
 
     task_queue[3] = (Task){
@@ -64,11 +63,11 @@ void init_task_manager() {
         .type = PERIODIC,
         .name = "Leitura B (READ)",
         .task_func = task_crud_list,
-        .total_work_units = 1,
+        .total_work_units = 2 + (rand() % TIME_QUANTUM),
         .progress = 0,
-        .missed_deadline = false,.time_zero = now,
-        .deadline = now
-    };
+        .missed_deadline = false,
+        .time_zero = now,
+        .deadline = now};
     task_queue[3].deadline.tv_sec += 7;
 
     // Tarefas de ATUALIZAÇÃO
@@ -77,12 +76,11 @@ void init_task_manager() {
         .type = APERIODIC,
         .name = "Atualização A (UPDATE)",
         .task_func = task_crud_update,
-        .total_work_units = 2,
+        .total_work_units = 2 + (rand() % TIME_QUANTUM),
         .progress = 0,
         .missed_deadline = false,
         .time_zero = now,
-        .deadline = now
-    };
+        .deadline = now};
     task_queue[4].deadline.tv_sec += 3;
 
     task_queue[5] = (Task){
@@ -90,12 +88,11 @@ void init_task_manager() {
         .type = PERIODIC,
         .name = "Atualização B (UPDATE)",
         .task_func = task_crud_update,
-        .total_work_units = 2,
+        .total_work_units = 2 + (rand() % TIME_QUANTUM),
         .progress = 0,
         .missed_deadline = false,
         .time_zero = now,
-        .deadline = now
-    };
+        .deadline = now};
     task_queue[5].deadline.tv_sec += 8;
 
     // Tarefas de REMOÇÃO
@@ -104,12 +101,11 @@ void init_task_manager() {
         .type = APERIODIC,
         .name = "Remoção A (DELETE)",
         .task_func = task_crud_delete,
-        .total_work_units = 1,
+        .total_work_units = 2 + (rand() % TIME_QUANTUM),
         .progress = 0,
         .missed_deadline = false,
         .time_zero = now,
-        .deadline = now
-    };
+        .deadline = now};
     task_queue[6].deadline.tv_sec += 6;
 
     task_queue[7] = (Task){
@@ -117,19 +113,18 @@ void init_task_manager() {
         .type = PERIODIC,
         .name = "Remoção B (DELETE)",
         .task_func = task_crud_delete,
-        .total_work_units = 1,
+        .total_work_units = 2 + (rand() % TIME_QUANTUM),
         .progress = 0,
         .missed_deadline = false,
-        .time_zero = now,
-        .deadline = now
-    };
+        .deadline = now};
     task_queue[7].deadline.tv_sec += 10;
 
-    for (int i = 0; i < NUM_THREADS; i++) {
+    for (int i = 0; i < NUM_THREADS; i++)
+    {
         printf("  - Tarefa %d: %s | Deadline: +%lds\n",
                i,
                task_queue[i].name,
-             //  task_queue[i].type == PERIODIC ? "Periódica" : "Não-periódica",
+               //  task_queue[i].type == PERIODIC ? "Periódica" : "Não-periódica",
                task_queue[i].deadline.tv_sec - now.tv_sec);
     }
 }

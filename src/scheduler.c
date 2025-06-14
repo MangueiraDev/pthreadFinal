@@ -66,7 +66,7 @@ void run_fifo_scheduler()
 
 #else
 
-void run_round_robin_scheduler()
+void* run_round_robin_scheduler()
 {
     printf("\n[RR] Iniciando escalonamento Round Robin com tarefas reais...\n");
 
@@ -107,6 +107,8 @@ void run_round_robin_scheduler()
                deadline,
                task_queue[i].missed_deadline ? "❌ Violado" : "✅ OK");
     }
+
+    return NULL;
 }
 
 #endif

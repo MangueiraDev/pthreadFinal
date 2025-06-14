@@ -28,6 +28,8 @@ typedef struct {
     const char* name;  // Nome descritivo da tarefa
 } Task;
 
+#define TIME_QUANTUM 4 // Quantum de 2 unidades de trabalho (segundos)
+
 #define NUM_THREADS 8  // 4 CRUD x (1 periódica + 1 aperiódica)
 
 #endif

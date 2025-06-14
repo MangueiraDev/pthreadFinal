@@ -1,133 +1,160 @@
-mangueira@MangueiraDev pthreadFinal % make clean
-make fifo && ./build/scheduler_fifo
-make rr && ./build/scheduler_rr
-rm -rf build
-gcc -Wall -pthread -lsqlite3 -Iinclude -DFIFO_MODE src/main.c src/task_manager.c src/scheduler.c src/thread_funcs.c src/db/db.c src/tasks/task_crud_insert.c src/tasks/task_crud_list.c src/tasks/task_crud_update.c src/tasks/task_crud_delete.c -o build/scheduler_fifo
-Executável FIFO gerado: ./build/scheduler_fifo
+
 --- Modo FIFO ---
 Inicializando tarefas CRUD (8 no total)...
-  - Tarefa 0: Inserção A (CREATE) | Tipo: Não-periódica | Deadline: +12s
-  - Tarefa 1: Inserção B (CREATE) | Tipo: Periódica | Deadline: +10s
-  - Tarefa 2: Leitura A (READ) | Tipo: Não-periódica | Deadline: +11s
-  - Tarefa 3: Leitura B (READ) | Tipo: Periódica | Deadline: +15s
-  - Tarefa 4: Atualização A (UPDATE) | Tipo: Não-periódica | Deadline: +6s
-  - Tarefa 5: Atualização B (UPDATE) | Tipo: Periódica | Deadline: +8s
-  - Tarefa 6: Remoção A (DELETE) | Tipo: Não-periódica | Deadline: +12s
-  - Tarefa 7: Remoção B (DELETE) | Tipo: Periódica | Deadline: +14s
+  - Tarefa 0: Inserção A (CREATE) | Deadline: +12s
+  - Tarefa 1: Inserção B (CREATE) | Deadline: +4s
+  - Tarefa 2: Leitura A (READ) | Deadline: +11s
+  - Tarefa 3: Leitura B (READ) | Deadline: +7s
+  - Tarefa 4: Atualização A (UPDATE) | Deadline: +3s
+  - Tarefa 5: Atualização B (UPDATE) | Deadline: +8s
+  - Tarefa 6: Remoção A (DELETE) | Deadline: +6s
+  - Tarefa 7: Remoção B (DELETE) | Deadline: +10s
 
 [FIFO] Iniciando escalonamento FIFO com tarefas reais...
+
+
 🧵 Executando tarefa 0: Inserção A (CREATE)
 [INSERT] Iniciando tarefa de inserção
 [INSERT] Finalizada inserção
 ✅ Inserção A (CREATE) dentro do deadline.
+
+
 🧵 Executando tarefa 1: Inserção B (CREATE)
 [INSERT] Iniciando tarefa de inserção
 [INSERT] Finalizada inserção
-✅ Inserção B (CREATE) dentro do deadline.
+⚠️  Inserção B (CREATE) VIOLOU o deadline! | Tempo de execução: 6.00
 🧵 Executando tarefa 2: Leitura A (READ)
 [LIST] Listando usuários
 Usuários cadastrados:
-ID: 1 | Nome: Eduardo | Email: Eduardo872@example.com
-ID: 2 | Nome: Bruno | Email: Bruno278@example.com
+ID: 1 | Nome: Helena | Email: Helena775@example.com
+ID: 2 | Nome: Eduardo | Email: Eduardo520@example.com
 ✅ Leitura A (READ) dentro do deadline.
+
+
 🧵 Executando tarefa 3: Leitura B (READ)
 [LIST] Listando usuários
 Usuários cadastrados:
-ID: 1 | Nome: Eduardo | Email: Eduardo872@example.com
-ID: 2 | Nome: Bruno | Email: Bruno278@example.com
+ID: 1 | Nome: Helena | Email: Helena775@example.com
+ID: 2 | Nome: Eduardo | Email: Eduardo520@example.com
 ✅ Leitura B (READ) dentro do deadline.
+
+
 🧵 Executando tarefa 4: Atualização A (UPDATE)
 [UPDATE] Iniciando atualização
 [UPDATE] Finalizada atualização
-✅ Atualização A (UPDATE) dentro do deadline.
+⚠️  Atualização A (UPDATE) VIOLOU o deadline! | Tempo de execução: 6.00
 🧵 Executando tarefa 5: Atualização B (UPDATE)
 [UPDATE] Iniciando atualização
 [UPDATE] Finalizada atualização
 ✅ Atualização B (UPDATE) dentro do deadline.
+
+
 🧵 Executando tarefa 6: Remoção A (DELETE)
 [DELETE] Iniciando remoção
 [DELETE] Finalizada remoção
 ✅ Remoção A (DELETE) dentro do deadline.
+
+
 🧵 Executando tarefa 7: Remoção B (DELETE)
 [DELETE] Iniciando remoção
 [DELETE] Finalizada remoção
 ✅ Remoção B (DELETE) dentro do deadline.
 
+
 [FIFO] Todas as tarefas foram concluídas!
-⏱️  Inserção A (CREATE) | Execução: 1.006153s | Deadline: 259936.199519000 | ✅ OK
-⏱️  Inserção B (CREATE) | Execução: 1.004107s | Deadline: 259934.199519000 | ✅ OK
-⏱️  Leitura A (READ) | Execução: 1.005506s | Deadline: 259935.199519000 | ✅ OK
-⏱️  Leitura B (READ) | Execução: 1.003413s | Deadline: 259939.199519000 | ✅ OK
-⏱️  Atualização A (UPDATE) | Execução: 1.004376s | Deadline: 259930.199519000 | ✅ OK
-⏱️  Atualização B (UPDATE) | Execução: 1.006112s | Deadline: 259932.199519000 | ✅ OK
-⏱️  Remoção A (DELETE) | Execução: 1.004570s | Deadline: 259936.199519000 | ✅ OK
-⏱️  Remoção B (DELETE) | Execução: 1.002376s | Deadline: 259938.199519000 | ✅ OK
-gcc -Wall -pthread -lsqlite3 -Iinclude src/main.c src/task_manager.c src/scheduler.c src/thread_funcs.c src/db/db.c src/tasks/task_crud_insert.c src/tasks/task_crud_list.c src/tasks/task_crud_update.c src/tasks/task_crud_delete.c -o build/scheduler_rr
-Executável RR gerado: ./build/scheduler_rr
+
+⏱️  Inserção A (CREATE) | Execução: 5.01| Deadline: 12.0 | ✅ OK
+⏱️  Inserção B (CREATE) | Execução: 6.01| Deadline: 4.0 | ❌ Violado
+⏱️  Leitura A (READ) | Execução: 4.00| Deadline: 11.0 | ✅ OK
+⏱️  Leitura B (READ) | Execução: 2.01| Deadline: 7.0 | ✅ OK
+⏱️  Atualização A (UPDATE) | Execução: 6.01| Deadline: 3.0 | ❌ Violado
+⏱️  Atualização B (UPDATE) | Execução: 2.01| Deadline: 8.0 | ✅ OK
+⏱️  Remoção A (DELETE) | Execução: 6.01| Deadline: 6.0 | ✅ OK
+⏱️  Remoção B (DELETE) | Execução: 2.01| Deadline: 10.0 | ✅ OK
+
+
 --- Modo Round Robin ---
 Inicializando tarefas CRUD (8 no total)...
-  - Tarefa 0: Inserção A (CREATE) | Tipo: Não-periódica | Deadline: +12s
-  - Tarefa 1: Inserção B (CREATE) | Tipo: Periódica | Deadline: +10s
-  - Tarefa 2: Leitura A (READ) | Tipo: Não-periódica | Deadline: +11s
-  - Tarefa 3: Leitura B (READ) | Tipo: Periódica | Deadline: +15s
-  - Tarefa 4: Atualização A (UPDATE) | Tipo: Não-periódica | Deadline: +6s
-  - Tarefa 5: Atualização B (UPDATE) | Tipo: Periódica | Deadline: +8s
-  - Tarefa 6: Remoção A (DELETE) | Tipo: Não-periódica | Deadline: +12s
-  - Tarefa 7: Remoção B (DELETE) | Tipo: Periódica | Deadline: +14s
+  - Tarefa 0: Inserção A (CREATE) | Deadline: +12s
+  - Tarefa 1: Inserção B (CREATE) | Deadline: +4s
+  - Tarefa 2: Leitura A (READ) | Deadline: +11s
+  - Tarefa 3: Leitura B (READ) | Deadline: +7s
+  - Tarefa 4: Atualização A (UPDATE) | Deadline: +3s
+  - Tarefa 5: Atualização B (UPDATE) | Deadline: +8s
+  - Tarefa 6: Remoção A (DELETE) | Deadline: +6s
+  - Tarefa 7: Remoção B (DELETE) | Deadline: +10s
+
+
+[RR] Iniciando escalonamento Round Robin com tarefas reais...
+
 🧵 Executando tarefa 0: Inserção A (CREATE)
 [INSERT] Iniciando tarefa de inserção
 
-[RR] Iniciando escalonamento Round Robin com tarefas reais...
+
 [RR] Turno da tarefa 0: Inserção A (CREATE)
 [INSERT] Finalizada inserção
-✅ Inserção A (CREATE) dentro do deadline.
+✅ Inserção A (CREATE) dentro do deadline. | Tempo de execução: 7.000000
+
+
 [RR] Turno da tarefa 1: Inserção B (CREATE)
 🧵 Executando tarefa 1: Inserção B (CREATE)
 [INSERT] Iniciando tarefa de inserção
 [INSERT] Finalizada inserção
-✅ Inserção B (CREATE) dentro do deadline.
+⚠️  Inserção B (CREATE) VIOLOU o deadline! | Tempo de execução: 5.000000
+
+
 [RR] Turno da tarefa 2: Leitura A (READ)
 🧵 Executando tarefa 2: Leitura A (READ)
 [LIST] Listando usuários
 Usuários cadastrados:
-ID: 1 | Nome: Diana | Email: Diana466@example.com
-ID: 2 | Nome: Bruno | Email: Bruno965@example.com
-✅ Leitura A (READ) dentro do deadline.
+ID: 1 | Nome: Gabriel | Email: Gabriel757@example.com
+ID: 2 | Nome: Fernanda | Email: Fernanda564@example.com
+✅ Leitura A (READ) dentro do deadline. | Tempo de execução: 3.000000
+
+
 [RR] Turno da tarefa 3: Leitura B (READ)
 🧵 Executando tarefa 3: Leitura B (READ)
 [LIST] Listando usuários
 Usuários cadastrados:
-ID: 1 | Nome: Diana | Email: Diana466@example.com
-ID: 2 | Nome: Bruno | Email: Bruno965@example.com
-✅ Leitura B (READ) dentro do deadline.
+ID: 1 | Nome: Gabriel | Email: Gabriel757@example.com
+ID: 2 | Nome: Fernanda | Email: Fernanda564@example.com
+✅ Leitura B (READ) dentro do deadline. | Tempo de execução: 3.000000
+
+
 [RR] Turno da tarefa 4: Atualização A (UPDATE)
 🧵 Executando tarefa 4: Atualização A (UPDATE)
 [UPDATE] Iniciando atualização
 [UPDATE] Finalizada atualização
-✅ Atualização A (UPDATE) dentro do deadline.
+⚠️  Atualização A (UPDATE) VIOLOU o deadline! | Tempo de execução: 5.000000
+
+
 [RR] Turno da tarefa 5: Atualização B (UPDATE)
 🧵 Executando tarefa 5: Atualização B (UPDATE)
 [UPDATE] Iniciando atualização
 [UPDATE] Finalizada atualização
-✅ Atualização B (UPDATE) dentro do deadline.
+✅ Atualização B (UPDATE) dentro do deadline. | Tempo de execução: 6.000000
+
+
 [RR] Turno da tarefa 6: Remoção A (DELETE)
 🧵 Executando tarefa 6: Remoção A (DELETE)
 [DELETE] Iniciando remoção
 [DELETE] Finalizada remoção
-✅ Remoção A (DELETE) dentro do deadline.
+⚠️  Remoção A (DELETE) VIOLOU o deadline! | Tempo de execução: 7.000000
+
+
 [RR] Turno da tarefa 7: Remoção B (DELETE)
 🧵 Executando tarefa 7: Remoção B (DELETE)
 [DELETE] Iniciando remoção
 [DELETE] Finalizada remoção
-✅ Remoção B (DELETE) dentro do deadline.
+✅ Remoção B (DELETE) dentro do deadline. | Tempo de execução: 5.000000
 
 [RR] Todas as tarefas foram concluídas!
-⏱️  Inserção A (CREATE) | Execução: 1.005062s | 259944.627323000 | ✅ OK
-⏱️  Inserção B (CREATE) | Execução: 1.005963s | 259942.627323000 | ✅ OK
-⏱️  Leitura A (READ) | Execução: 1.005278s | 259943.627323000 | ✅ OK
-⏱️  Leitura B (READ) | Execução: 1.003120s | 259947.627323000 | ✅ OK
-⏱️  Atualização A (UPDATE) | Execução: 1.007789s | 259938.627323000 | ✅ OK
-⏱️  Atualização B (UPDATE) | Execução: 1.008857s | 259940.627323000 | ✅ OK
-⏱️  Remoção A (DELETE) | Execução: 1.008209s | 259944.627323000 | ✅ OK
-⏱️  Remoção B (DELETE) | Execução: 1.005695s | 259946.627323000 | ✅ OK
-mangueira@MangueiraDev pthreadFinal % 
+⏱️  Inserção A (CREATE) | Execução: 7.01| Deadline: 12.0 | ✅ OK
+⏱️  Inserção B (CREATE) | Execução: 5.00| Deadline: 4.0 | ❌ Violado
+⏱️  Leitura A (READ) | Execução: 3.01| Deadline: 11.0 | ✅ OK
+⏱️  Leitura B (READ) | Execução: 3.01| Deadline: 7.0 | ✅ OK
+⏱️  Atualização A (UPDATE) | Execução: 5.01| Deadline: 3.0 | ❌ Violado
+⏱️  Atualização B (UPDATE) | Execução: 6.01| Deadline: 8.0 | ✅ OK
+⏱️  Remoção A (DELETE) | Execução: 7.01| Deadline: 6.0 | ❌ Violado
+⏱️  Remoção B (DELETE) | Execução: 5.00| Deadline: 10.0 | ✅ OK
+
